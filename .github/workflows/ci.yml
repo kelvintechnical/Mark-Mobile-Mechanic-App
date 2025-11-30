@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Install workloads
+        run: dotnet workload install maui
+      - name: Restore
+        run: dotnet restore MarkMobileMechanic.sln
+      - name: Build
+        run: dotnet build MarkMobileMechanic.sln --configuration Release --no-restore
+      - name: Test
+        run: dotnet test MarkMobileMechanic.sln --configuration Release --no-build
